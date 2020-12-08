@@ -29,15 +29,15 @@ namespace Reversi
         /// </summary>
         private void InitializeComponent()
         {
-            this.panel1 = new System.Windows.Forms.Panel();
+            //this.panel1 = new System.Windows.Forms.Panel();
             this.SuspendLayout();
             // 
             // panel1
             // 
             this.panel1.BackColor = System.Drawing.SystemColors.HighlightText;
-            this.panel1.Location = new System.Drawing.Point(59, 100);
+            this.panel1.Location = new System.Drawing.Point(77, 12);
             this.panel1.Name = "panel1";
-            this.panel1.Size = new System.Drawing.Size(300, 300);
+            //this.panel1.Size = new System.Drawing.Size(500, 500);
             this.panel1.TabIndex = 0;
             this.panel1.Click += new System.EventHandler(this.panel1_Click);
             this.panel1.Paint += new System.Windows.Forms.PaintEventHandler(this.panel1_Paint);
@@ -48,7 +48,7 @@ namespace Reversi
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.SystemColors.Menu;
-            this.ClientSize = new System.Drawing.Size(800, 450);
+            this.ClientSize = new System.Drawing.Size(802, 539);
             this.Controls.Add(this.panel1);
             this.Name = "Form1";
             this.Text = "Form1";

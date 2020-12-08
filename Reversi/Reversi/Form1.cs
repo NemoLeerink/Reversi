@@ -12,11 +12,11 @@ namespace Reversi
 {
     public partial class Form1 : Form
     {
-        const int breed = 6;
-        const int hoog = 6;
+        const int breed = 4;
+        const int hoog = 4;
         int muisX;
         int muisY;
-        int formaatVakje;
+        int formaatVakje = 50;
         bool blauwBeurt;
 
         int[,] gameState = new int[breed, hoog];
@@ -32,6 +32,9 @@ namespace Reversi
             gameState[middenX - 1, middenY] = 1;
 
             this.blauwBeurt = true;
+            
+            this.panel1 = new System.Windows.Forms.Panel();
+            this.panel1.Size = new System.Drawing.Size(formaatVakje*breed+1, formaatVakje*hoog+1);
 
             InitializeComponent();
         }
@@ -42,35 +45,19 @@ namespace Reversi
             Brush blauwBrush = new SolidBrush(Color.Blue);
 
             Graphics gr = e.Graphics;
-            
-            int breedVakje = panel1.Width / breed;
-            int hoogVakje = panel1.Width / hoog;
-
-            if (breedVakje > hoogVakje)
-            {
-                breedVakje = hoogVakje;
-            }
-            else if (hoogVakje > breedVakje) 
-            {
-                hoogVakje = breedVakje;
-            }
-            formaatVakje = breedVakje;
 
             Pen penZwart = new Pen(Color.Black, 1);
 
 
-            for (int h = 0; h <= hoog; h++)
+            for (int h = 0; h <= breed; h++)
             {
                 gr.DrawLine(penZwart, formaatVakje * h, 0, formaatVakje * h, panel1.Height);
             }
 
-            for (int b = 0; b <= breed; b++)
+            for (int b = 0; b <= hoog; b++)
             {
                 gr.DrawLine(penZwart, 0, formaatVakje * b, panel1.Width, formaatVakje * b);
             }
-
-            gr.DrawLine(penZwart, panel1.Width-1, 0, panel1.Width-1, panel1.Height-1);
-            gr.DrawLine(penZwart, 0, panel1.Height-1, panel1.Width-1, panel1.Height-1);
 
             for (int b = 0; b < breed; b++) 
             {
@@ -117,7 +104,7 @@ namespace Reversi
 
         private bool geldigeZet() 
         {
-            bool geldigeZet;
+            bool geldigeZet = true;
             
             
 
