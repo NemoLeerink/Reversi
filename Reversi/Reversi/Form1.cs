@@ -13,13 +13,15 @@ namespace Reversi
     public partial class Form1 : Form
     {
         const int breed = 10;
-        const int hoog = 4;
+        const int hoog = 10;
         int maximaal = Math.Max(breed, hoog);
         int minimaalFormaat = 500;
         int muisX;
         int muisY;
         int formaatVakje;
-        bool blauwBeurt;
+        bool speler1Beurt;
+        Color kleurSpeler1 = Color.Blue;
+        Color kleurSpeler2 = Color.Red;
 
         int[,] gameState = new int[breed, hoog];
 
@@ -36,17 +38,20 @@ namespace Reversi
             gameState[middenX, middenY-1] = 1;
             gameState[middenX - 1, middenY] = 1;
 
-            this.blauwBeurt = true;
+            this.speler1Beurt = true;
 
             InitializeComponent();
             this.ClientSize = new System.Drawing.Size(formaatVakje * breed + 1, formaatVakje * hoog + 51);
             this.panel1.Size = new System.Drawing.Size(formaatVakje * breed + 1, formaatVakje * hoog + 1);
+
+            //this.panel1.BackColor = Color.FromArgb(174, 184, 254);
+            this.label1.Text = "Speler 1 is aan de beurt.";
         }
 
         private void panel1_Paint(object sender, PaintEventArgs e)
         {
-            Brush roodBrush = new SolidBrush(Color.Red);
-            Brush blauwBrush = new SolidBrush(Color.Blue);
+            Brush speler2Brush = new SolidBrush(kleurSpeler2);
+            Brush speler1Brush = new SolidBrush(kleurSpeler1);
 
             Graphics gr = e.Graphics;
 
@@ -68,11 +73,11 @@ namespace Reversi
                 for (int h = 0; h < hoog; h++) 
                 {
                     if (gameState[b, h] == 1) {
-                        gr.FillEllipse(roodBrush, formaatVakje * b, formaatVakje * h, formaatVakje, formaatVakje);
+                        gr.FillEllipse(speler2Brush, formaatVakje * b, formaatVakje * h, formaatVakje, formaatVakje);
                     }
                     else if (gameState[b, h] == 2)
                     {
-                        gr.FillEllipse(blauwBrush, formaatVakje * b, formaatVakje * h, formaatVakje, formaatVakje);
+                        gr.FillEllipse(speler1Brush, formaatVakje * b, formaatVakje * h, formaatVakje, formaatVakje);
                     }
                 }
             }
@@ -80,14 +85,21 @@ namespace Reversi
 
         private void panel1_Click(object sender, EventArgs e)
         {
-            this.blauwBeurt = !this.blauwBeurt;
-            // if geen geldige beurt, doe weer this.blauwBeurt = !this.blauwBeurt;
+            string beurt;
+
+            if (this.speler1Beurt) {
+                beurt = "Speler 2 is aan de beurt.";
+            } else {
+                beurt = "Speler 1 is aan de beurt.";
+            }
+            
+            this.label1.Text = beurt;
 
             // x / breede per vakje en y / hoogte per vakje
             int vakjeX = this.muisX / this.formaatVakje;
             int vakjeY = this.muisY / this.formaatVakje;
 
-            if (this.blauwBeurt)
+            if (this.speler1Beurt)
             {
                 this.gameState[vakjeX, vakjeY] = 2;
             }
@@ -96,6 +108,8 @@ namespace Reversi
                 this.gameState[vakjeX, vakjeY] = 1; 
             }
 
+            this.speler1Beurt = !this.speler1Beurt;
+            // if geen geldige beurt, doe weer this.blauwBeurt = !this.blauwBeurt;
             this.Refresh();
            
         }
@@ -114,7 +128,32 @@ namespace Reversi
 
             return geldigeZet;
         }
-        //methode ingesloten
-        // methode geldig
+
+        private void button1_Click(object sender, EventArgs e)
+        {
+            ColorDialog leukKleurtje = new ColorDialog();
+
+            if (speler1Beurt)
+            {
+                leukKleurtje.Color = kleurSpeler1;
+
+                // Update the text box color if the user clicks OK 
+                if (leukKleurtje.ShowDialog() == DialogResult.OK)
+                    kleurSpeler1 = leukKleurtje.Color;
+            }
+            else 
+            {
+                leukKleurtje.Color = kleurSpeler2;
+
+                // Update the text box color if the user clicks OK 
+                if (leukKleurtje.ShowDialog() == DialogResult.OK)
+                    kleurSpeler2 = leukKleurtje.Color;
+            }
+
+            this.Refresh();
+            // kleur mag niet zelfde als andere speler en niet wit
+        }
+        //methode is de steen ingesloten
+        // methode geldige zet
     }
 }
