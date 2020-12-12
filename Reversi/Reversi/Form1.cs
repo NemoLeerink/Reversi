@@ -12,17 +12,22 @@ namespace Reversi
 {
     public partial class Form1 : Form
     {
-        const int breed = 4;
+        const int breed = 10;
         const int hoog = 4;
+        int maximaal = Math.Max(breed, hoog);
+        int minimaalFormaat = 500;
         int muisX;
         int muisY;
-        int formaatVakje = 50;
+        int formaatVakje;
         bool blauwBeurt;
 
         int[,] gameState = new int[breed, hoog];
 
         public Form1()
         {
+            
+            formaatVakje = minimaalFormaat / maximaal;
+
             int middenX = breed / 2;
             int middenY = hoog / 2;
 
@@ -32,11 +37,10 @@ namespace Reversi
             gameState[middenX - 1, middenY] = 1;
 
             this.blauwBeurt = true;
-            
-            this.panel1 = new System.Windows.Forms.Panel();
-            this.panel1.Size = new System.Drawing.Size(formaatVakje*breed+1, formaatVakje*hoog+1);
 
             InitializeComponent();
+            this.ClientSize = new System.Drawing.Size(formaatVakje * breed + 1, formaatVakje * hoog + 51);
+            this.panel1.Size = new System.Drawing.Size(formaatVakje * breed + 1, formaatVakje * hoog + 1);
         }
 
         private void panel1_Paint(object sender, PaintEventArgs e)
