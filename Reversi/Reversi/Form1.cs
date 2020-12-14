@@ -14,23 +14,26 @@ namespace Reversi
     {
         const int breed = 4;
         const int hoog = 4;
+        
         int maximaal = Math.Max(breed, hoog);
         int minimaalFormaat = 500;
+        int formaatVakje;
+
         int muisX;
         int muisY;
-        int formaatVakje;
+              
         bool speler1Beurt;
         bool hulpModus = false;
+        
         Color kleurSpeler1 = Color.Blue;
         Color kleurSpeler2 = Color.Red;
 
+        // Lijst met welke posities geldig zijn voor de huidige speler
         int[,] valid = new int[breed, hoog];
         int[,] gameState = new int[breed, hoog];
 
         public Form1()
         {
-            formaatVakje = minimaalFormaat / maximaal;
-
             InitializeComponent();
             nieuwSpel();
             this.ClientSize = new System.Drawing.Size(formaatVakje * breed + 1, formaatVakje * hoog + 101);
@@ -104,18 +107,18 @@ namespace Reversi
         {
             string beurt;
             bool redo = false;
-            //int[,] check = new int[breed, hoog];
+            //int[,] check = new int[breed, hoog
 
             // x / breede per vakje en y / hoogte per vakje
             int vakjeX = this.muisX / this.formaatVakje;
             int vakjeY = this.muisY / this.formaatVakje;
 
+            berekenGeldigeZet(vakjeX, vakjeY);
             if (this.speler1Beurt)
-            {
-                berekenGeldigeZet(vakjeX, vakjeY);
-                if (valid[vakjeX, vakjeY] == 2)
+            {  
+                if (valid[vakjeX, vakjeY] == 1)
                 {
-                    this.gameState[vakjeX, vakjeY] = 2;
+                    this.gameState[vakjeX, vakjeY] = 1;
                 }
                 else
                 {
@@ -124,10 +127,9 @@ namespace Reversi
             }
             else
             {
-                berekenGeldigeZet(vakjeX, vakjeY);
-                if (valid[vakjeX, vakjeY] == 1)
+                if (valid[vakjeX, vakjeY] == 2)
                 {
-                    this.gameState[vakjeX, vakjeY] = 1;
+                    this.gameState[vakjeX, vakjeY] = 2;
                 }
                 else
                 {
@@ -200,6 +202,7 @@ namespace Reversi
 
             bool[] geldigePositie = new bool[8];
 
+            // maar wat als het 1 of 2 was?
             if (gameState[row, column] == 0)
             {
                 bool nw = geldigeZet(-1, -1, row, column);
@@ -219,9 +222,10 @@ namespace Reversi
                 bool se = geldigeZet(1, 1, row, column);
                 geldigePositie[7] = se;
 
+                // Onderstaande code werkt niet zoals het moet
                 for (int i = 0; i < geldigePositie.Length; i++)
                 {
-                    Console.WriteLine(geldigePositie[i]);
+                    //Console.WriteLine(geldigePositie[i]);
                     if (geldigePositie[i])
                     {
                         if (this.speler1Beurt)
@@ -273,12 +277,14 @@ namespace Reversi
             this.hulpModus = !this.hulpModus;
             this.Refresh();
         }
-        //methode is de steen ingesloten
+        // methode is de steen ingesloten
         // methode geldige zet
 
         private void nieuwSpel() {
             int middenX = breed / 2;
             int middenY = hoog / 2;
+
+            formaatVakje = minimaalFormaat / maximaal;
 
             for (int b = 0; b < breed; b++)
             {
