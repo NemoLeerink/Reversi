@@ -120,13 +120,76 @@ namespace Reversi
             this.muisY = e.Y;
         }
 
-        private bool geldigeZet() 
+        private bool geldigeZet(int rowChange, int columnChange, int row, int column)
         {
+            int other;
+            if (this.speler1Beurt)
+            {
+                other = 1;
+            }
+            else
+            {
+                other = 2;
+            }
+
+            if ((row + rowChange < 0) || (row + rowChange > hoog))
+            {
+                return false;
+            }
+            if ((column + columnChange < 0) || (column + columnChange > breed))
+            {
+                return false;
+            }
+            if (gameState[row + rowChange, column + columnChange] != other)
+            {
+                return false;
+            }
+            if (gameState[row + rowChange, column + columnChange] == other)
+            {
+
+            }
+
             bool geldigeZet = true;
-            
-            
+
+
 
             return geldigeZet;
+        }
+
+        private void berekenGeldigeZet()
+        {
+            int[,] valid = new int[breed, hoog];
+            for (int row = 0; row < breed; row++)
+            {
+                for (int column = 0; column < hoog; column++)
+                {
+                    if (gameState[row, column] == 0)
+                    {
+                        bool nw = geldigeZet(-1, -1, row, column);
+                        bool nn = geldigeZet(-1, 0, row, column);
+                        bool ne = geldigeZet(-1, 1, row, column);
+
+                        bool ee = geldigeZet(0, 1, row, column);
+                        bool ww = geldigeZet(0, -1, row, column);
+
+                        bool sw = geldigeZet(1, -1, row, column);
+                        bool ss = geldigeZet(1, 0, row, column);
+                        bool se = geldigeZet(1, 1, row, column);
+
+                        if (nw || nn || ne || ee || ww || sw || ss || se)
+                        {
+                            if (this.speler1Beurt)
+                            {
+                                valid[row, column] = 2;
+                            }
+                            else
+                            {
+                                valid[row, column] = 1;
+                            }
+                        }
+                    }
+                }
+            }
         }
 
         private void button1_Click(object sender, EventArgs e)
@@ -138,7 +201,7 @@ namespace Reversi
                 leukKleurtje.Color = kleurSpeler1;
 
                 // Update the text box color if the user clicks OK 
-                if (leukKleurtje.ShowDialog() == DialogResult.OK)
+                if (leukKleurtje.ShowDialog() == DialogResult.OK && leukKleurtje.Color != Color.White && leukKleurtje.Color != kleurSpeler2)
                     kleurSpeler1 = leukKleurtje.Color;
             }
             else 
@@ -146,7 +209,7 @@ namespace Reversi
                 leukKleurtje.Color = kleurSpeler2;
 
                 // Update the text box color if the user clicks OK 
-                if (leukKleurtje.ShowDialog() == DialogResult.OK)
+                if (leukKleurtje.ShowDialog() == DialogResult.OK && leukKleurtje.Color != Color.White && leukKleurtje.Color != kleurSpeler1)
                     kleurSpeler2 = leukKleurtje.Color;
             }
 
