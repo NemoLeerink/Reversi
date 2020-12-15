@@ -12,8 +12,8 @@ namespace Reversi
 {
     public partial class Form1 : Form
     {
-        const int breed = 4;
-        const int hoog = 4;
+        const int breed = 10;
+        const int hoog = 10;
         
         int maximaal = Math.Max(breed, hoog);
         int minimaalFormaat = 500;
@@ -23,7 +23,7 @@ namespace Reversi
         int muisY;
               
         bool speler1Beurt;
-        bool hulpModus = false;
+        bool hulpModus;
 
         Color kleurSpeler1;
         Color kleurSpeler2;
@@ -49,6 +49,7 @@ namespace Reversi
 
             Pen penZwart = new Pen(Color.Black, 1);
 
+            // Later vervangen met kortere code
             if (hulpModus) {
                 if (speler1Beurt)
                 {
@@ -78,6 +79,7 @@ namespace Reversi
             }
 
 
+            // Tekent het speelraster
             for (int h = 0; h <= breed; h++)
             {
                 gr.DrawLine(penZwart, formaatVakje * h, 0, formaatVakje * h, panel1.Height);
@@ -88,6 +90,7 @@ namespace Reversi
                 gr.DrawLine(penZwart, 0, formaatVakje * b, panel1.Width, formaatVakje * b);
             }
 
+            // Tekent de schijfjes van de spelers op het speelraster
             for (int b = 0; b < breed; b++) 
             {
                 for (int h = 0; h < hoog; h++) 
@@ -107,45 +110,29 @@ namespace Reversi
         {
             string beurt;
             bool redo = false;
-            //int[,] check = new int[breed, hoog
-
-            // x / breede per vakje en y / hoogte per vakje
+            
+            // Bereken het vakje waar op geclickt is
             int vakjeX = this.muisX / this.formaatVakje;
             int vakjeY = this.muisY / this.formaatVakje;
 
             // berekenGeldigeZet(vakjeX, vakjeY);
 
-            if (this.speler1Beurt)
+            if (this.geldigeZet(vakjeX, vakjeY))
             {
-                this.gameState[vakjeX, vakjeY] = 1;
-            }
-            else {
-                this.gameState[vakjeX, vakjeY] = 2;
-            }
-            
-            /*if (this.speler1Beurt)
-            {  
-                if (valid[vakjeX, vakjeY] == 1)
+                if (this.speler1Beurt)
                 {
                     this.gameState[vakjeX, vakjeY] = 1;
                 }
                 else
                 {
-                    redo = true;
-                }
-            }
-            else
-            {
-                if (valid[vakjeX, vakjeY] == 2)
-                {
                     this.gameState[vakjeX, vakjeY] = 2;
                 }
-                else
-                {
-                    redo = true;
-                }
-            }*/
+            }
+            else {
+                redo = true;
+            }
 
+            // Mits de gemaakte zet geldig was wordt de beurt overgedragen
             if (!redo) {
                 
                 this.speler1Beurt = !this.speler1Beurt;
@@ -172,7 +159,8 @@ namespace Reversi
             this.muisY = e.Y;
         }
 
-        private bool geldigeZet(int row, int column) // int rowChange, int columnChange, int row, int column
+        // Checkt voor alle richtingen of het een geldige zet is 
+        private bool geldigeZet(int row, int column)
         {
             if (gameState[row, column] != 0) 
             {
@@ -212,86 +200,9 @@ namespace Reversi
             }
 
             return false;
-
-
-            /*int other;
-            if (this.speler1Beurt)
-            {
-                other = 2;
-            }
-            else
-            {
-                other = 1;
-            }
-
-            if ((row + rowChange < 0) || (row + rowChange > hoog-1))
-            {
-                return false;
-            }
-            else if ((column + columnChange < 0) || (column + columnChange > breed-1))
-            {
-                return false;
-            }
-            else if (gameState[row + rowChange, column + columnChange] != other)
-            {
-                return false;
-            }
-            else if (gameState[row + rowChange, column + columnChange] == other)
-            {
-                return true; // tijdelijk
-            }
-
-            return true;*/
         }
 
-        /*private void berekenGeldigeZet(int b, int h)
-        {
-            int row = b;
-            int column = h;
-
-            bool[] geldigePositie = new bool[8];
-
-            // maar wat als het 1 of 2 was?
-            if (gameState[row, column] == 0)
-            {
-                bool nw = geldigeZet(-1, -1, row, column);
-                geldigePositie[0] = nw;
-                bool nn = geldigeZet(-1, 0, row, column);
-                geldigePositie[1] = nn;
-                bool ne = geldigeZet(-1, 1, row, column);
-                geldigePositie[2] = ne;
-                bool ee = geldigeZet(0, 1, row, column);
-                geldigePositie[3] = ee;
-                bool ww = geldigeZet(0, -1, row, column);
-                geldigePositie[4] = ww;
-                bool sw = geldigeZet(1, -1, row, column);
-                geldigePositie[5] = sw;
-                bool ss = geldigeZet(1, 0, row, column);
-                geldigePositie[6] = ss;
-                bool se = geldigeZet(1, 1, row, column);
-                geldigePositie[7] = se;
-
-                // Onderstaande code werkt niet zoals het moet
-                for (int i = 0; i < geldigePositie.Length; i++)
-                {
-                    //Console.WriteLine(geldigePositie[i]);
-                    if (geldigePositie[i])
-                    {
-                        if (this.speler1Beurt)
-                        {
-                            valid[row, column] = 1;
-                        }
-                        else
-                        {
-                            valid[row, column] = 2;
-                        }
-                    }
-                }
-              
-            }
-            
-        }  */
-       
+        // Deze knop/methode zorgt ervoor dat spelers zelf hun kleur kunnen kiezen
         private void button1_Click(object sender, EventArgs e)
         {
             ColorDialog leukKleurtje = new ColorDialog();
@@ -315,18 +226,21 @@ namespace Reversi
             this.Refresh();
         }
 
+        // Deze methode laat spelers met behulp van de knop een nieuw spel starten
         private void button2_Click(object sender, EventArgs e)
         {
             nieuwSpel();
             this.Refresh();
         }
 
+        // Deze methode zet de hulp functie aan/uit
         private void button3_Click(object sender, EventArgs e)
         {
             this.hulpModus = !this.hulpModus;
             this.Refresh();
         }
 
+        // Deze methode wordt aangeroepen wanneer er een nieuw spel wordt gestart
         private void nieuwSpel() {
             int middenX = breed / 2;
             int middenY = hoog / 2;
@@ -335,6 +249,7 @@ namespace Reversi
             kleurSpeler2 = Color.Red;
 
             formaatVakje = minimaalFormaat / maximaal;
+            hulpModus = false;
 
             gameState = new int[breed, hoog];
             valid = new int[breed, hoog]; // nog niet zeker of nodig
@@ -348,8 +263,46 @@ namespace Reversi
             this.label1.Text = "Speler 1 is aan de beurt.";
         }
 
+        // Deze methode checkt of er binnen de meegegeven richting een steen wordt ingesloten
         private bool ingesloten(int row, int column, int x, int y) {
-            return true;
+            int other;
+            int me;
+            
+            if (this.speler1Beurt)
+            {
+                other = 2;
+                me = 1;
+            }
+            else {
+                other = 1;
+                me = 2;
+            }
+
+            int t = 1;
+            // Blijf de richting checken behalve als je buiten de marges gaat.
+            while ((row + x * t >= 0) && (row + x * t < breed) && (column + y * t >= 0) && (column + y * t < hoog)) {
+                
+                // Zit ik naast een steen van een andere kleur met deze richting?
+                // Ja, ga verder
+                // Nee, return false
+                if (t == 1) {
+                    if (gameState[row + x, column + y] != other)
+                    {
+                        return false;
+                    }
+                }
+
+                // Als ik op deze rij mezelf nog een keer tegenkom, wordt er een steen ingesloten. We hebben namelijk eerder al vastgesteld dat 
+                // de steen direct naast mij van de tegenstander is
+                if (gameState[row + t * x, column + t * y] == me) {
+                    return true;
+                }
+
+                t++;
+            }
+
+            // Helaas wordt er geen steen ingesloten
+            return false;
         }
     }
 
