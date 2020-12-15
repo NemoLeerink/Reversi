@@ -24,13 +24,13 @@ namespace Reversi
               
         bool speler1Beurt;
         bool hulpModus = false;
-        
-        Color kleurSpeler1 = Color.Blue;
-        Color kleurSpeler2 = Color.Red;
+
+        Color kleurSpeler1;
+        Color kleurSpeler2;
 
         // Lijst met welke posities geldig zijn voor de huidige speler
-        int[,] valid = new int[breed, hoog];
-        int[,] gameState = new int[breed, hoog];
+        int[,] valid;
+        int[,] gameState;
 
         public Form1()
         {
@@ -113,8 +113,17 @@ namespace Reversi
             int vakjeX = this.muisX / this.formaatVakje;
             int vakjeY = this.muisY / this.formaatVakje;
 
-            berekenGeldigeZet(vakjeX, vakjeY);
+            // berekenGeldigeZet(vakjeX, vakjeY);
+
             if (this.speler1Beurt)
+            {
+                this.gameState[vakjeX, vakjeY] = 1;
+            }
+            else {
+                this.gameState[vakjeX, vakjeY] = 2;
+            }
+            
+            /*if (this.speler1Beurt)
             {  
                 if (valid[vakjeX, vakjeY] == 1)
                 {
@@ -135,7 +144,7 @@ namespace Reversi
                 {
                     redo = true;
                 }
-            }
+            }*/
 
             if (!redo) {
                 
@@ -163,9 +172,49 @@ namespace Reversi
             this.muisY = e.Y;
         }
 
-        private bool geldigeZet(int rowChange, int columnChange, int row, int column)
+        private bool geldigeZet(int row, int column) // int rowChange, int columnChange, int row, int column
         {
-            int other;
+            if (gameState[row, column] != 0) 
+            {
+                return false;
+            }
+            if (ingesloten(row, column, -1, -1)) 
+            {
+                return true;
+            }
+            if (ingesloten(row, column, -1, 0))
+            {
+                return true;
+            }
+            if (ingesloten(row, column, -1, 1))
+            {
+                return true;
+            }
+            if (ingesloten(row, column, 0, 1))
+            {
+                return true;
+            }
+            if (ingesloten(row, column, 0, -1))
+            {
+                return true;
+            }
+            if (ingesloten(row, column, 1, -1))
+            {
+                return true;
+            }
+            if (ingesloten(row, column, 1, 0))
+            {
+                return true;
+            }
+            if (ingesloten(row, column, 1, 1))
+            {
+                return true;
+            }
+
+            return false;
+
+
+            /*int other;
             if (this.speler1Beurt)
             {
                 other = 2;
@@ -192,10 +241,10 @@ namespace Reversi
                 return true; // tijdelijk
             }
 
-            return true;
+            return true;*/
         }
 
-        private void berekenGeldigeZet(int b, int h)
+        /*private void berekenGeldigeZet(int b, int h)
         {
             int row = b;
             int column = h;
@@ -241,7 +290,7 @@ namespace Reversi
               
             }
             
-        }  
+        }  */
        
         private void button1_Click(object sender, EventArgs e)
         {
@@ -277,23 +326,19 @@ namespace Reversi
             this.hulpModus = !this.hulpModus;
             this.Refresh();
         }
-        // methode is de steen ingesloten
-        // methode geldige zet
 
         private void nieuwSpel() {
             int middenX = breed / 2;
             int middenY = hoog / 2;
 
+            kleurSpeler1 = Color.Blue;
+            kleurSpeler2 = Color.Red;
+
             formaatVakje = minimaalFormaat / maximaal;
 
-            for (int b = 0; b < breed; b++)
-            {
-                for (int h = 0; h < hoog; h++)
-                {
-                    gameState[b, h] = 0;
-                }
-            }
-
+            gameState = new int[breed, hoog];
+            valid = new int[breed, hoog]; // nog niet zeker of nodig
+           
             gameState[middenX, middenY] = 1;
             gameState[middenX - 1, middenY - 1] = 1;
             gameState[middenX, middenY - 1] = 2;
@@ -301,6 +346,10 @@ namespace Reversi
 
             this.speler1Beurt = true;
             this.label1.Text = "Speler 1 is aan de beurt.";
+        }
+
+        private bool ingesloten(int row, int column, int x, int y) {
+            return true;
         }
     }
 
