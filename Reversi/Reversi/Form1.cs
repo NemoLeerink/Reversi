@@ -12,11 +12,11 @@ namespace Reversi
 {
     public partial class Form1 : Form
     {
-        const int breed = 10;
-        const int hoog = 10;
-        
+        const int breed = 8;
+        const int hoog = 8;
+        const int minimaalFormaat = 500;
+
         int maximaal = Math.Max(breed, hoog);
-        int minimaalFormaat = 500;
         int formaatVakje;
 
         int muisX;
@@ -34,10 +34,11 @@ namespace Reversi
 
         public Form1()
         {
+            // Voegt de knoppen en eventhandlers toe
             InitializeComponent();
+            
+            // Geeft beginwaarden aan de variabelen 
             nieuwSpel();
-            this.ClientSize = new System.Drawing.Size(formaatVakje * breed + 1, formaatVakje * hoog + 101);
-            this.panel1.Size = new System.Drawing.Size(formaatVakje * breed + 1, formaatVakje * hoog + 1);
         }
 
         private void panel1_Paint(object sender, PaintEventArgs e)
@@ -162,41 +163,31 @@ namespace Reversi
         // Checkt voor alle richtingen of het een geldige zet is 
         private bool geldigeZet(int row, int column)
         {
-            if (gameState[row, column] != 0) 
+            // Werkt maar kleurt soms teveel in omdat het uitgaat van de nieuwe situatie
+            bool[] geldigeRichtingen = new bool[8];
+            int[] hoeveelInkleuren = new int[8];
+            int[,] richtingen = new int[8, 2] {{ -1, -1 }, { -1, 0 }, { -1, 1 }, { 0, 1 }, { 0, -1 }, { 1, -1 }, { 1, 0}, { 1, 1 }};
+    
+            // Het vakje moet leeg zijn om er een steen te kunnen plaatsen
+            if (gameState[row, column] != 0) return false;
+
+            // Berekend hoeveel stenen er in iedere richting moeten worden ingekleurd. Als dit gelijk is aan 0 is het dus geen geldige richting
+            for (int i = 0; i < geldigeRichtingen.Length; i++)
             {
-                return false;
+                hoeveelInkleuren[i] = ingesloten(row, column, richtingen[i, 0], richtingen[i, 1]);
+                if (hoeveelInkleuren[i] != 0) geldigeRichtingen[i] = true;
+                else geldigeRichtingen[i] = false;
             }
-            if (ingesloten(row, column, -1, -1)) 
+
+            // Staat in een apparte for-loop zodat stenen die deze beurt worden ingekleurd niet op hun beurt weer andere stenen gaan inkleuren
+            for (int i = 0; i < geldigeRichtingen.Length; i++)
             {
-                return true;
+                inkleuren(row, column, richtingen[i, 0], richtingen[i, 1], hoeveelInkleuren[i]);
             }
-            if (ingesloten(row, column, -1, 0))
+          
+            for (int i = 0; i < geldigeRichtingen.Length; i++)
             {
-                return true;
-            }
-            if (ingesloten(row, column, -1, 1))
-            {
-                return true;
-            }
-            if (ingesloten(row, column, 0, 1))
-            {
-                return true;
-            }
-            if (ingesloten(row, column, 0, -1))
-            {
-                return true;
-            }
-            if (ingesloten(row, column, 1, -1))
-            {
-                return true;
-            }
-            if (ingesloten(row, column, 1, 0))
-            {
-                return true;
-            }
-            if (ingesloten(row, column, 1, 1))
-            {
-                return true;
+                if (geldigeRichtingen[i] == true) return true;
             }
 
             return false;
@@ -261,12 +252,18 @@ namespace Reversi
 
             this.speler1Beurt = true;
             this.label1.Text = "Speler 1 is aan de beurt.";
+
+            this.ClientSize = new System.Drawing.Size(formaatVakje * breed + 1, formaatVakje * hoog + 101);
+            this.panel1.Size = new System.Drawing.Size(formaatVakje * breed + 1, formaatVakje * hoog + 1);
         }
 
         // Deze methode checkt of er binnen de meegegeven richting een steen wordt ingesloten
-        private bool ingesloten(int row, int column, int x, int y) {
+        // De return waarde is het aantal in te kleuren vakjes in deze richting
+        private int ingesloten(int row, int column, int x, int y) {
+
             int other;
             int me;
+            int hoeveelVakjes = 0;
             
             if (this.speler1Beurt)
             {
@@ -285,24 +282,34 @@ namespace Reversi
                 // Zit ik naast een steen van een andere kleur met deze richting?
                 // Ja, ga verder
                 // Nee, return false
-                if (t == 1) {
+                if (t == 1) {   
                     if (gameState[row + x, column + y] != other)
                     {
-                        return false;
+                        return hoeveelVakjes;
                     }
                 }
 
                 // Als ik op deze rij mezelf nog een keer tegenkom, wordt er een steen ingesloten. We hebben namelijk eerder al vastgesteld dat 
                 // de steen direct naast mij van de tegenstander is
                 if (gameState[row + t * x, column + t * y] == me) {
-                    return true;
+
+                    hoeveelVakjes = t;
                 }
 
                 t++;
             }
 
             // Helaas wordt er geen steen ingesloten
-            return false;
+            return hoeveelVakjes;
+        }
+
+        // Deze methode kleurt de "overgenomen" posities in
+        private void inkleuren(int row, int column, int x, int y, int aantalVakjes) {
+            for (int i = 1; i < aantalVakjes; i++)
+            {
+                if (this.speler1Beurt) gameState[row + i * x, column + i * y] = 1;
+                else gameState[row + i * x, column + i * y] = 2;
+            }
         }
     }
 
