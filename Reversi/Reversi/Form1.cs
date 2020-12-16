@@ -12,9 +12,9 @@ namespace Reversi
 {
     public partial class Form1 : Form
     {
-        const int breed = 8;
-        const int hoog = 8;
-        const int minimaalFormaat = 500;
+        const int breed = 4;
+        const int hoog = 4;
+        const int xFormaat = 500;
 
         int maximaal = Math.Max(breed, hoog);
         int formaatVakje;
@@ -97,11 +97,11 @@ namespace Reversi
                 for (int h = 0; h < hoog; h++) 
                 {
                     if (gameState[b, h] == 2) {
-                        gr.FillEllipse(speler2Brush, formaatVakje * b, formaatVakje * h, formaatVakje, formaatVakje);
+                        gr.FillEllipse(speler2Brush, formaatVakje * b + 3, formaatVakje * h + 3, formaatVakje-6, formaatVakje-6);
                     }
                     else if (gameState[b, h] == 1)
                     {
-                        gr.FillEllipse(speler1Brush, formaatVakje * b, formaatVakje * h, formaatVakje, formaatVakje);
+                        gr.FillEllipse(speler1Brush, formaatVakje * b + 3, formaatVakje * h + 3, formaatVakje - 6, formaatVakje - 6);
                     }
                 }
             }
@@ -109,7 +109,6 @@ namespace Reversi
 
         private void panel1_Click(object sender, EventArgs e)
         {
-            string beurt;
             bool redo = false;
             
             // Bereken het vakje waar op geclickt is
@@ -133,21 +132,42 @@ namespace Reversi
                 redo = true;
             }
 
-            // Mits de gemaakte zet geldig was wordt de beurt overgedragen
+            // Mits de gemaakte zet geldig was wordt de beurt overgedragen 
             if (!redo) {
-                
+
+                // Telt het totaal aantal posities van de spelers
+                int somSpeler1 = 0;
+                int somSpeler2 = 0;
+                string steen1 = "stenen";
+                string steen2 = "stenen";
+                for (int b = 0; b < breed; b++)
+                {
+                    for (int h = 0; h < hoog; h++)
+                    {
+                        if (gameState[b, h] == 1) somSpeler1++;
+                        else if (gameState[b, h] == 2) somSpeler2++;
+                    }
+                }
+               
+                if (somSpeler1 == 1) steen1 = "steen";
+                if (somSpeler2 == 1) steen2 = "steen";
+
+                this.label2.Text = $"Speler 1 heeft {somSpeler1} {steen1}."; 
+                this.label3.Text = $"Speler 2 heeft {somSpeler2} {steen2}."; 
+
+                // Draag de beurt naar de andere speler over
                 this.speler1Beurt = !this.speler1Beurt;
                 if (this.speler1Beurt)
                 {
-                    beurt = "Speler 1 is aan de beurt.";
+                    this.label1.Text = "Speler 1 is aan de beurt.";
+                    this.label1.ForeColor = kleurSpeler1;
+
                 }
                 else
                 {
-                    beurt = "Speler 2 is aan de beurt.";
+                    this.label1.Text = "Speler 2 is aan de beurt.";
+                    this.label1.ForeColor = kleurSpeler2;
                 }
-
-                this.label1.Text = beurt;
-
             }
            
             this.Refresh();
@@ -185,6 +205,7 @@ namespace Reversi
                 inkleuren(row, column, richtingen[i, 0], richtingen[i, 1], hoeveelInkleuren[i]);
             }
           
+            // Als een van de richtingen geldig was, is het een geldige zet
             for (int i = 0; i < geldigeRichtingen.Length; i++)
             {
                 if (geldigeRichtingen[i] == true) return true;
@@ -203,15 +224,24 @@ namespace Reversi
                 leukKleurtje.Color = kleurSpeler1;
 
                 // Kleur mag niet zelfde als andere speler en niet wit
-                if (leukKleurtje.ShowDialog() == DialogResult.OK && leukKleurtje.Color != Color.White && leukKleurtje.Color != kleurSpeler2)
+                if (leukKleurtje.ShowDialog() == DialogResult.OK && leukKleurtje.Color != Color.White && leukKleurtje.Color != kleurSpeler2) {
                     kleurSpeler1 = leukKleurtje.Color;
+                    this.label1.ForeColor = kleurSpeler1;
+                    this.label2.ForeColor = kleurSpeler1;
+                }
+                
             }
             else 
             {
                 leukKleurtje.Color = kleurSpeler2;
- 
-                if (leukKleurtje.ShowDialog() == DialogResult.OK && leukKleurtje.Color != Color.White && leukKleurtje.Color != kleurSpeler1)
+
+                if (leukKleurtje.ShowDialog() == DialogResult.OK && leukKleurtje.Color != Color.White && leukKleurtje.Color != kleurSpeler1) 
+                {
                     kleurSpeler2 = leukKleurtje.Color;
+                    this.label1.ForeColor = kleurSpeler2;
+                    this.label3.ForeColor = kleurSpeler2;
+                }
+                    
             }
 
             this.Refresh();
@@ -239,7 +269,7 @@ namespace Reversi
             kleurSpeler1 = Color.Blue;
             kleurSpeler2 = Color.Red;
 
-            formaatVakje = minimaalFormaat / maximaal;
+            formaatVakje = xFormaat / maximaal;
             hulpModus = false;
 
             gameState = new int[breed, hoog];
@@ -251,10 +281,23 @@ namespace Reversi
             gameState[middenX - 1, middenY] = 2;
 
             this.speler1Beurt = true;
+            
             this.label1.Text = "Speler 1 is aan de beurt.";
+            this.label2.Text = "Speler 1 heeft 2 stenen.";
+            this.label3.Text = "Speler 2 heeft 2 stenen.";
 
-            this.ClientSize = new System.Drawing.Size(formaatVakje * breed + 1, formaatVakje * hoog + 101);
+            this.label1.ForeColor = kleurSpeler1;
+            this.label2.ForeColor = kleurSpeler1;
+            this.label3.ForeColor = kleurSpeler2;
+
+            this.ClientSize = new System.Drawing.Size(xFormaat, formaatVakje * hoog + 101);
             this.panel1.Size = new System.Drawing.Size(formaatVakje * breed + 1, formaatVakje * hoog + 1);
+
+            // Zet het paneel in het midden van de client
+            int xVanPaneel = (xFormaat - (formaatVakje * breed))/2;
+
+            this.panel1.Location = new Point(xVanPaneel, 100);
+
         }
 
         // Deze methode checkt of er binnen de meegegeven richting een steen wordt ingesloten
@@ -263,7 +306,6 @@ namespace Reversi
 
             int other;
             int me;
-            int hoeveelVakjes = 0;
             
             if (this.speler1Beurt)
             {
@@ -285,7 +327,7 @@ namespace Reversi
                 if (t == 1) {   
                     if (gameState[row + x, column + y] != other)
                     {
-                        return hoeveelVakjes;
+                        return 0;
                     }
                 }
 
@@ -293,14 +335,13 @@ namespace Reversi
                 // de steen direct naast mij van de tegenstander is
                 if (gameState[row + t * x, column + t * y] == me) {
 
-                    hoeveelVakjes = t;
+                    return t;
                 }
 
                 t++;
             }
 
-            // Helaas wordt er geen steen ingesloten
-            return hoeveelVakjes;
+            return 0;
         }
 
         // Deze methode kleurt de "overgenomen" posities in
@@ -310,6 +351,13 @@ namespace Reversi
                 if (this.speler1Beurt) gameState[row + i * x, column + i * y] = 1;
                 else gameState[row + i * x, column + i * y] = 2;
             }
+        }
+
+        // Tekent de twee cirkeltjes op de form in de kleur van de speler 
+        private void Form1_Paint(object sender, PaintEventArgs e)
+        {
+            e.Graphics.FillEllipse(new SolidBrush(kleurSpeler1),25, 7, 30, 30);
+            e.Graphics.FillEllipse(new SolidBrush(kleurSpeler2),25, 39, 30, 30);
         }
     }
 
