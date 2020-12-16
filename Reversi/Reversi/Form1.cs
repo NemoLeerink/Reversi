@@ -12,70 +12,53 @@ namespace Reversi
 {
     public partial class Form1 : Form
     {
-        const int breed = 4;
-        const int hoog = 4;
-        
+        const int breed = 8;
+        const int hoog = 8;
         int maximaal = Math.Max(breed, hoog);
         int minimaalFormaat = 500;
-        int formaatVakje;
-
         int muisX;
         int muisY;
-              
+        int formaatVakje;
         bool speler1Beurt;
-        bool hulpModus = false;
-        
-        Color kleurSpeler1 = Color.Blue;
-        Color kleurSpeler2 = Color.Red;
+        Color kleurSpeler1 = Color.Red;
+        Color kleurSpeler2 = Color.Blue;
 
-        // Lijst met welke posities geldig zijn voor de huidige speler
-        int[,] valid = new int[breed, hoog];
         int[,] gameState = new int[breed, hoog];
 
         public Form1()
         {
+
+            formaatVakje = minimaalFormaat / maximaal;
+
+            int middenX = breed / 2;
+            int middenY = hoog / 2;
+
+            gameState[middenX, middenY] = 1;
+            gameState[middenX - 1, middenY - 1] = 1;
+            gameState[middenX, middenY - 1] = 2;
+            gameState[middenX - 1, middenY] = 2;
+
+            gameState[5, 5] = 1;
+            gameState[6, 6] = 1;
+
+            this.speler1Beurt = true;
+
             InitializeComponent();
-            nieuwSpel();
-            this.ClientSize = new System.Drawing.Size(formaatVakje * breed + 1, formaatVakje * hoog + 101);
+            this.ClientSize = new System.Drawing.Size(formaatVakje * breed + 1, formaatVakje * hoog + 51);
             this.panel1.Size = new System.Drawing.Size(formaatVakje * breed + 1, formaatVakje * hoog + 1);
+
+            //this.panel1.BackColor = Color.FromArgb(174, 184, 254);
+            this.label1.Text = "Speler 1 is aan de beurt.";
         }
 
         private void panel1_Paint(object sender, PaintEventArgs e)
         {
-            Brush speler2Brush = new SolidBrush(kleurSpeler2);
             Brush speler1Brush = new SolidBrush(kleurSpeler1);
+            Brush speler2Brush = new SolidBrush(kleurSpeler2);
 
             Graphics gr = e.Graphics;
 
             Pen penZwart = new Pen(Color.Black, 1);
-
-            if (hulpModus) {
-                if (speler1Beurt)
-                {
-                    for (int b = 0; b < breed; b++)
-                    {
-                        for (int h = 0; h < hoog; h++)
-                        {
-                            if (valid[b, h] == 1)
-                            {
-                                gr.DrawEllipse(penZwart, (formaatVakje * b) + (formaatVakje / 4), (formaatVakje * h) + (formaatVakje / 4), formaatVakje / 2, formaatVakje / 2);
-                            }
-                        }
-                    }
-                }
-                else {
-                    for (int b = 0; b < breed; b++)
-                    {
-                        for (int h = 0; h < hoog; h++)
-                        {
-                            if (valid[b, h] == 2)
-                            {
-                                gr.DrawEllipse(penZwart, (formaatVakje * b) + (formaatVakje / 4), (formaatVakje * h) + (formaatVakje / 4), formaatVakje / 2, formaatVakje / 2);
-                            }
-                        }
-                    }
-                }
-            }
 
 
             for (int h = 0; h <= breed; h++)
@@ -88,16 +71,17 @@ namespace Reversi
                 gr.DrawLine(penZwart, 0, formaatVakje * b, panel1.Width, formaatVakje * b);
             }
 
-            for (int b = 0; b < breed; b++) 
+            for (int b = 0; b < breed; b++)
             {
-                for (int h = 0; h < hoog; h++) 
+                for (int h = 0; h < hoog; h++)
                 {
-                    if (gameState[b, h] == 2) {
-                        gr.FillEllipse(speler2Brush, formaatVakje * b, formaatVakje * h, formaatVakje, formaatVakje);
-                    }
-                    else if (gameState[b, h] == 1)
+                    if (gameState[b, h] == 1)
                     {
                         gr.FillEllipse(speler1Brush, formaatVakje * b, formaatVakje * h, formaatVakje, formaatVakje);
+                    }
+                    else if (gameState[b, h] == 2)
+                    {
+                        gr.FillEllipse(speler2Brush, formaatVakje * b, formaatVakje * h, formaatVakje, formaatVakje);
                     }
                 }
             }
@@ -106,17 +90,17 @@ namespace Reversi
         private void panel1_Click(object sender, EventArgs e)
         {
             string beurt;
-            bool redo = false;
-            //int[,] check = new int[breed, hoog
 
             // x / breede per vakje en y / hoogte per vakje
             int vakjeX = this.muisX / this.formaatVakje;
             int vakjeY = this.muisY / this.formaatVakje;
 
-            berekenGeldigeZet(vakjeX, vakjeY);
+            bool redo = false;
+
             if (this.speler1Beurt)
-            {  
-                if (valid[vakjeX, vakjeY] == 1)
+            {
+                int[,] check = berekenGeldigeZet(vakjeX, vakjeY);
+                if (check[vakjeX, vakjeY] == 1)
                 {
                     this.gameState[vakjeX, vakjeY] = 1;
                 }
@@ -127,7 +111,8 @@ namespace Reversi
             }
             else
             {
-                if (valid[vakjeX, vakjeY] == 2)
+                int[,] check = berekenGeldigeZet(vakjeX, vakjeY);
+                if (check[vakjeX, vakjeY] == 2)
                 {
                     this.gameState[vakjeX, vakjeY] = 2;
                 }
@@ -137,24 +122,21 @@ namespace Reversi
                 }
             }
 
-            if (!redo) {
-                
+            if (redo == false)
+            {
                 this.speler1Beurt = !this.speler1Beurt;
-                if (this.speler1Beurt)
-                {
-                    beurt = "Speler 1 is aan de beurt.";
-                }
-                else
-                {
-                    beurt = "Speler 2 is aan de beurt.";
-                }
-
-                this.label1.Text = beurt;
-
             }
-           
+            if (this.speler1Beurt)
+            {
+                beurt = "Speler 1 is aan de beurt.";
+            }
+            else
+            {
+                beurt = "Speler 2 is aan de beurt.";
+            }
+            this.label1.Text = beurt;
             this.Refresh();
-           
+
         }
 
         private void panel1_MouseMove(object sender, MouseEventArgs e)
@@ -163,86 +145,99 @@ namespace Reversi
             this.muisY = e.Y;
         }
 
-        private bool geldigeZet(int rowChange, int columnChange, int row, int column)
+        private int geldigeZet(int rowChange, int columnChange, int row, int column, int count)
         {
+            int self;
             int other;
             if (this.speler1Beurt)
             {
+                self = 1;
                 other = 2;
             }
             else
             {
+                self = 2;
                 other = 1;
             }
 
-            if ((row + rowChange < 0) || (row + rowChange > hoog-1))
+            if ((row + rowChange < 0) || (row + rowChange > hoog - 1))
             {
-                return false;
+                return count;
             }
-            else if ((column + columnChange < 0) || (column + columnChange > breed-1))
+            else if ((column + columnChange < 0) || (column + columnChange > breed - 1))
             {
-                return false;
+                return count;
             }
-            else if (gameState[row + rowChange, column + columnChange] != other)
+            else if (gameState[column + columnChange, row + rowChange] != other)
             {
-                return false;
+                return count;
             }
-            else if (gameState[row + rowChange, column + columnChange] == other)
+            else if (gameState[column + columnChange, row + rowChange] == other)
             {
-                return true; // tijdelijk
+                if (geldigeZet(rowChange, columnChange, row+rowChange, column+columnChange, count) == 0)
+                {
+                    return count + 1;
+                }
+                else
+                {
+                    return geldigeZet(rowChange, columnChange, row + rowChange, column + columnChange, count) + 1;
+                }
             }
-
-            return true;
+            else
+            {
+                return count;
+            }
         }
 
-        private void berekenGeldigeZet(int b, int h)
+        private int[,] berekenGeldigeZet(int c, int r)
         {
-            int row = b;
-            int column = h;
+            int row = r;
+            int column = c;
+            int[,] valid = new int[breed, hoog];
 
-            bool[] geldigePositie = new bool[8];
-
-            // maar wat als het 1 of 2 was?
-            if (gameState[row, column] == 0)
+            if (this.speler1Beurt)
             {
-                bool nw = geldigeZet(-1, -1, row, column);
-                geldigePositie[0] = nw;
-                bool nn = geldigeZet(-1, 0, row, column);
-                geldigePositie[1] = nn;
-                bool ne = geldigeZet(-1, 1, row, column);
-                geldigePositie[2] = ne;
-                bool ee = geldigeZet(0, 1, row, column);
-                geldigePositie[3] = ee;
-                bool ww = geldigeZet(0, -1, row, column);
-                geldigePositie[4] = ww;
-                bool sw = geldigeZet(1, -1, row, column);
-                geldigePositie[5] = sw;
-                bool ss = geldigeZet(1, 0, row, column);
-                geldigePositie[6] = ss;
-                bool se = geldigeZet(1, 1, row, column);
-                geldigePositie[7] = se;
+                int beurt = 1;
+            }
+            else
+            {
+                int beurt = 2;
+            }
 
-                // Onderstaande code werkt niet zoals het moet
-                for (int i = 0; i < geldigePositie.Length; i++)
+            if (gameState[column, row] == 0)
+            {
+                int nw = geldigeZet(-1, -1, row, column, 0);
+                int nn = geldigeZet(-1, 0, row, column, 0);
+                int ne = geldigeZet(-1, 1, row, column, 0);
+
+                int ee = geldigeZet(0, 1, row, column, 0);
+                int ww = geldigeZet(0, -1, row, column, 0);
+
+                int sw = geldigeZet(1, -1, row, column, 0);
+                int ss = geldigeZet(1, 0, row, column, 0);
+                int se = geldigeZet(1, 1, row, column, 0);
+                Console.WriteLine(se);
+
+                int[] all8 = new int[8] {nw, nn, ne, ee, ww, sw, ss, se };
+
+                for (int i = 0; i < 8; i++)
                 {
-                    //Console.WriteLine(geldigePositie[i]);
-                    if (geldigePositie[i])
+                    if (all8[i] > 0)
                     {
                         if (this.speler1Beurt)
                         {
-                            valid[row, column] = 1;
+                            valid[column, row] = 1;
                         }
                         else
                         {
-                            valid[row, column] = 2;
+                            valid[column, row] = 2;
                         }
                     }
+
                 }
-              
             }
-            
-        }  
-       
+            return valid;
+        }
         private void button1_Click(object sender, EventArgs e)
         {
             ColorDialog leukKleurtje = new ColorDialog();
@@ -251,57 +246,23 @@ namespace Reversi
             {
                 leukKleurtje.Color = kleurSpeler1;
 
-                // Kleur mag niet zelfde als andere speler en niet wit
+                // Update the text box color if the user clicks OK 
                 if (leukKleurtje.ShowDialog() == DialogResult.OK && leukKleurtje.Color != Color.White && leukKleurtje.Color != kleurSpeler2)
                     kleurSpeler1 = leukKleurtje.Color;
             }
-            else 
+            else
             {
                 leukKleurtje.Color = kleurSpeler2;
- 
+
+                // Update the text box color if the user clicks OK 
                 if (leukKleurtje.ShowDialog() == DialogResult.OK && leukKleurtje.Color != Color.White && leukKleurtje.Color != kleurSpeler1)
                     kleurSpeler2 = leukKleurtje.Color;
             }
 
             this.Refresh();
+            // kleur mag niet zelfde als andere speler en niet wit
         }
-
-        private void button2_Click(object sender, EventArgs e)
-        {
-            nieuwSpel();
-            this.Refresh();
-        }
-
-        private void button3_Click(object sender, EventArgs e)
-        {
-            this.hulpModus = !this.hulpModus;
-            this.Refresh();
-        }
-        // methode is de steen ingesloten
+        //methode is de steen ingesloten
         // methode geldige zet
-
-        private void nieuwSpel() {
-            int middenX = breed / 2;
-            int middenY = hoog / 2;
-
-            formaatVakje = minimaalFormaat / maximaal;
-
-            for (int b = 0; b < breed; b++)
-            {
-                for (int h = 0; h < hoog; h++)
-                {
-                    gameState[b, h] = 0;
-                }
-            }
-
-            gameState[middenX, middenY] = 1;
-            gameState[middenX - 1, middenY - 1] = 1;
-            gameState[middenX, middenY - 1] = 2;
-            gameState[middenX - 1, middenY] = 2;
-
-            this.speler1Beurt = true;
-            this.label1.Text = "Speler 1 is aan de beurt.";
-        }
     }
-
 }
