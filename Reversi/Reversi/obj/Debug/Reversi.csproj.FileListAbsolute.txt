@@ -18,3 +18,13 @@ C:\Users\Nemo\Desktop\Reversi\Reversi\Reversi\obj\Debug\Reversi.pdb
 C:\Users\Nemo\Desktop\Reversi\Reversi\Reversi\bin\Debug\Reversi.exe.config
 C:\Users\Nemo\Desktop\Reversi\Reversi\Reversi\bin\Debug\Reversi.exe
 C:\Users\Nemo\Desktop\Reversi\Reversi\Reversi\bin\Debug\Reversi.pdb
+C:\Users\Gebruiker\Documents\Reversi\Reversi\Reversi\bin\Debug\Reversi.exe.config
+C:\Users\Gebruiker\Documents\Reversi\Reversi\Reversi\bin\Debug\Reversi.exe
+C:\Users\Gebruiker\Documents\Reversi\Reversi\Reversi\bin\Debug\Reversi.pdb
+C:\Users\Gebruiker\Documents\Reversi\Reversi\Reversi\obj\Debug\Reversi.csprojAssemblyReference.cache
+C:\Users\Gebruiker\Documents\Reversi\Reversi\Reversi\obj\Debug\Reversi.Form1.resources
+C:\Users\Gebruiker\Documents\Reversi\Reversi\Reversi\obj\Debug\Reversi.Properties.Resources.resources
+C:\Users\Gebruiker\Documents\Reversi\Reversi\Reversi\obj\Debug\Reversi.csproj.GenerateResource.cache
+C:\Users\Gebruiker\Documents\Reversi\Reversi\Reversi\obj\Debug\Reversi.csproj.CoreCompileInputs.cache
+C:\Users\Gebruiker\Documents\Reversi\Reversi\Reversi\obj\Debug\Reversi.exe
+C:\Users\Gebruiker\Documents\Reversi\Reversi\Reversi\obj\Debug\Reversi.pdb

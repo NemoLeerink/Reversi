@@ -12,8 +12,8 @@ namespace Reversi
 {
     public partial class Form1 : Form
     {
-        const int breed = 4;
-        const int hoog = 4;
+        const int breed = 3;
+        const int hoog = 3;
         const int xFormaat = 500;
 
         int maximaal = Math.Max(breed, hoog);
@@ -51,7 +51,30 @@ namespace Reversi
             Pen penZwart = new Pen(Color.Black, 1);
 
             // Later vervangen met kortere code
+            // Geeft de mogelijke zetten weer
+            Array.Clear(valid, 0, valid.Length);
             if (hulpModus) {
+                for (int b = 0; b < breed; b++)
+                {
+                    for (int h = 0; h < hoog; h++)
+                    {
+                        if (gameState[b, h] == 0)
+                        {
+                            if (geldigeZet(b, h, false) == true)
+                            {
+                                if (speler1Beurt)
+                                {
+                                    valid[b, h] = 1;
+                                }
+                                else
+                                {
+                                    valid[b, h] = 2;
+                                }
+                            }
+                        }
+                    }
+                }
+
                 if (speler1Beurt)
                 {
                     for (int b = 0; b < breed; b++)
@@ -78,7 +101,6 @@ namespace Reversi
                     }
                 }
             }
-
 
             // Tekent het speelraster
             for (int h = 0; h <= breed; h++)
@@ -117,7 +139,7 @@ namespace Reversi
 
             // berekenGeldigeZet(vakjeX, vakjeY);
 
-            if (this.geldigeZet(vakjeX, vakjeY))
+            if (this.geldigeZet(vakjeX, vakjeY, true))
             {
                 if (this.speler1Beurt)
                 {
@@ -181,7 +203,7 @@ namespace Reversi
         }
 
         // Checkt voor alle richtingen of het een geldige zet is 
-        private bool geldigeZet(int row, int column)
+        private bool geldigeZet(int row, int column, bool kleuren)
         {
             // Werkt maar kleurt soms teveel in omdat het uitgaat van de nieuwe situatie
             bool[] geldigeRichtingen = new bool[8];
@@ -200,11 +222,13 @@ namespace Reversi
             }
 
             // Staat in een apparte for-loop zodat stenen die deze beurt worden ingekleurd niet op hun beurt weer andere stenen gaan inkleuren
-            for (int i = 0; i < geldigeRichtingen.Length; i++)
+            if (kleuren == true)
             {
-                inkleuren(row, column, richtingen[i, 0], richtingen[i, 1], hoeveelInkleuren[i]);
+                for (int i = 0; i < geldigeRichtingen.Length; i++)
+                {
+                    inkleuren(row, column, richtingen[i, 0], richtingen[i, 1], hoeveelInkleuren[i]);
+                }
             }
-          
             // Als een van de richtingen geldig was, is het een geldige zet
             for (int i = 0; i < geldigeRichtingen.Length; i++)
             {
