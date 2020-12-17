@@ -12,8 +12,8 @@ namespace Reversi
 {
     public partial class Form1 : Form
     {
-        const int breed = 3;
-        const int hoog = 3;
+        const int breed = 6;
+        const int hoog = 6;
         const int xFormaat = 500;
 
         int maximaal = Math.Max(breed, hoog);
@@ -50,50 +50,16 @@ namespace Reversi
 
             Pen penZwart = new Pen(Color.Black, 1);
 
-            // Later vervangen met kortere code
-            // Geeft de mogelijke zetten weer
-            Array.Clear(valid, 0, valid.Length);
-            if (hulpModus) {
-                for (int b = 0; b < breed; b++)
-                {
-                    for (int h = 0; h < hoog; h++)
-                    {
-                        if (gameState[b, h] == 0)
-                        {
-                            if (geldigeZet(b, h, false) == true)
-                            {
-                                if (speler1Beurt)
-                                {
-                                    valid[b, h] = 1;
-                                }
-                                else
-                                {
-                                    valid[b, h] = 2;
-                                }
-                            }
-                        }
-                    }
-                }
-
-                if (speler1Beurt)
+            // Geeft de mogelijke zetten weer.
+            if (hulpModus)
+            {
+                if (bereken_geldige_zetten())
                 {
                     for (int b = 0; b < breed; b++)
                     {
                         for (int h = 0; h < hoog; h++)
                         {
                             if (valid[b, h] == 1)
-                            {
-                                gr.DrawEllipse(penZwart, (formaatVakje * b) + (formaatVakje / 4), (formaatVakje * h) + (formaatVakje / 4), formaatVakje / 2, formaatVakje / 2);
-                            }
-                        }
-                    }
-                }
-                else {
-                    for (int b = 0; b < breed; b++)
-                    {
-                        for (int h = 0; h < hoog; h++)
-                        {
-                            if (valid[b, h] == 2)
                             {
                                 gr.DrawEllipse(penZwart, (formaatVakje * b) + (formaatVakje / 4), (formaatVakje * h) + (formaatVakje / 4), formaatVakje / 2, formaatVakje / 2);
                             }
@@ -129,6 +95,27 @@ namespace Reversi
             }
         }
 
+        private bool bereken_geldige_zetten()
+        {
+            bool erIsEenZet = false;
+            Array.Clear(valid, 0, valid.Length);
+            for (int b = 0; b < breed; b++)
+            {
+                for (int h = 0; h < hoog; h++)
+                {
+                    if (gameState[b, h] == 0)
+                    {
+                        if (geldigeZet(b, h, false) == true)
+                        {
+                            valid[b, h] = 1;
+                            erIsEenZet = true;
+                        }
+                    }
+                }
+            }
+            return erIsEenZet;
+        }
+
         private void panel1_Click(object sender, EventArgs e)
         {
             bool redo = false;
@@ -138,23 +125,26 @@ namespace Reversi
             int vakjeY = this.muisY / this.formaatVakje;
 
             // berekenGeldigeZet(vakjeX, vakjeY);
-
-            if (this.geldigeZet(vakjeX, vakjeY, true))
+            if (bereken_geldige_zetten())
             {
-                if (this.speler1Beurt)
+                if (this.geldigeZet(vakjeX, vakjeY, true))
                 {
-                    this.gameState[vakjeX, vakjeY] = 1;
+                    if (this.speler1Beurt)
+                    {
+                        this.gameState[vakjeX, vakjeY] = 1;
+                    }
+                    else
+                    {
+                        this.gameState[vakjeX, vakjeY] = 2;
+                    }
                 }
                 else
                 {
-                    this.gameState[vakjeX, vakjeY] = 2;
+                    redo = true;
                 }
             }
-            else {
-                redo = true;
-            }
 
-            // Mits de gemaakte zet geldig was wordt de beurt overgedragen 
+            // Mits de gemaakte zet geldig was, of er geen geldige zet is, wordt de beurt overgedragen 
             if (!redo) {
 
                 // Telt het totaal aantal posities van de spelers
@@ -191,9 +181,7 @@ namespace Reversi
                     this.label1.ForeColor = kleurSpeler2;
                 }
             }
-           
             this.Refresh();
-           
         }
 
         private void panel1_MouseMove(object sender, MouseEventArgs e)
@@ -354,13 +342,20 @@ namespace Reversi
                         return 0;
                     }
                 }
+                
+                // Als je een leeg vakje tegenkomt moet je niet in die richting kleuren.
+                if (gameState[row + t * x, column + t * y] == 0)
+                {
+                    return 0;
+                }
 
                 // Als ik op deze rij mezelf nog een keer tegenkom, wordt er een steen ingesloten. We hebben namelijk eerder al vastgesteld dat 
-                // de steen direct naast mij van de tegenstander is
-                if (gameState[row + t * x, column + t * y] == me) {
-
+                // de steen direct naast mij van de tegenstander is.
+                if (gameState[row + t * x, column + t * y] == me) 
+                {
                     return t;
                 }
+
 
                 t++;
             }
