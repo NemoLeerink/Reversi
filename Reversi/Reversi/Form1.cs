@@ -13,7 +13,7 @@ namespace Reversi
     public partial class Form1 : Form
     {
         const int breed = 4;
-        const int hoog = 6;
+        const int hoog = 4;
         const int xFormaat = 500;
 
         int maximaal = Math.Max(breed, hoog);
@@ -96,6 +96,7 @@ namespace Reversi
             }
         }
 
+        // Berekent of er een geldige zet voor de speler is
         private bool berekenGeldigeZet()
         {
             bool erIsEenZet = false;
@@ -125,7 +126,6 @@ namespace Reversi
             int vakjeX = this.muisX / this.formaatVakje;
             int vakjeY = this.muisY / this.formaatVakje;
 
-            // berekenGeldigeZet(vakjeX, vakjeY);
             if (this.geldigeZet(vakjeX, vakjeY, true))
             {
                 if (this.speler1Beurt)
@@ -220,7 +220,6 @@ namespace Reversi
         // Checkt voor alle richtingen of het een geldige zet is 
         private bool geldigeZet(int row, int column, bool kleuren)
         {
-            // Werkt maar kleurt soms teveel in omdat het uitgaat van de nieuwe situatie
             bool[] geldigeRichtingen = new bool[8];
             int[] hoeveelInkleuren = new int[8];
             int[,] richtingen = new int[8, 2] { { -1, -1 }, { -1, 0 }, { -1, 1 }, { 0, 1 }, { 0, -1 }, { 1, -1 }, { 1, 0 }, { 1, 1 } };
@@ -314,7 +313,7 @@ namespace Reversi
             hulpModus = false;
 
             gameState = new int[breed, hoog];
-            valid = new int[breed, hoog]; // nog niet zeker of nodig
+            valid = new int[breed, hoog];
 
             gameState[middenX, middenY] = 1;
             gameState[middenX - 1, middenY - 1] = 1;
@@ -367,7 +366,7 @@ namespace Reversi
 
                 // Zit ik naast een steen van een andere kleur met deze richting?
                 // Ja, ga verder
-                // Nee, return false
+                // Nee, return 0
                 if (t == 1)
                 {
                     if (gameState[row + x, column + y] != other)
@@ -376,14 +375,14 @@ namespace Reversi
                     }
                 }
 
-                // Als je een leeg vakje tegenkomt moet je niet in die richting kleuren.
+                // Als je een leeg vakje tegenkomt moet je niet in die richting kleuren
                 if (gameState[row + t * x, column + t * y] == 0)
                 {
                     return 0;
                 }
 
                 // Als ik op deze rij mezelf nog een keer tegenkom, wordt er een steen ingesloten. We hebben namelijk eerder al vastgesteld dat 
-                // de steen direct naast mij van de tegenstander is.
+                // de steen direct naast mij van de tegenstander is
                 if (gameState[row + t * x, column + t * y] == me)
                 {
                     return t;
